@@ -1,0 +1,10 @@
+{
+  "name": "ensto-bt-thermostat-reader",
+  "version": "0.0.1",
+  "description": "Read Ensto BT thermostat readings with node and BLE",
+  "author": "tuomas.salo@iki.fi",
+  "license": "MIT",
+  "dependencies": {
+    "@abandonware/noble": "1.9.2-15"
+  }
+}
