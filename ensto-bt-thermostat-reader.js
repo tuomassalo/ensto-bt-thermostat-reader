@@ -55,7 +55,6 @@ Pairing a device:
 2) Enable pairing mode by pulling out the potentiometer on the device and
    pushing the button for more than 0.5 and less then 7 seconds. A blue LED
    will start blinking.
-
 3) While the blue LED blinks, run:
 
    node ensto-bt-thermostat-reader.js --read device-address
