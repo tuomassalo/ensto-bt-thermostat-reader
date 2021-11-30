@@ -236,8 +236,7 @@ async function connect(peripheral, pairing) {
       const roomTemperature = (256 * stats[5] + stats[4]) / 10;
       // const floorTemperature = (256 * stats[7] + stats[6]) / 10;
       const relayIsOn = stats[8] === 1;
-      log(
-        0,
+      console.log(
         JSON.stringify({
           address: peripheral.address,
           deviceName,
