@@ -26,7 +26,9 @@ function usage() {
 
   Common options:
   --verbose         - for more logging to stderr.
-  --keep-reading    - stay alive, loop reading and printing the data.
+  --repeat n        - stay alive, loop reading and printing the data.
+                      Use "--repeat 0" for infinite loop.
+  --repeat-delay n  - wait n milliseconds between repeats. Defaults to 500.
 
 
 This program attempts to connect to an Ensto ECO16BT (possibly also ECO10BTW,
@@ -67,6 +69,9 @@ KNOWN BUGS
 For some reason, the first "--read" attempt seems to always (?) fail.
 Just retry it right away, and it (usually) works.
 
+For some reason, the first "--read" sometimes returns stale data. Seems like
+an Ensto firmware bug. Use "--repeat 2 --repeat-delay 0" as a workaround.
+
 `);
   process.exit(1);
 }
@@ -92,7 +97,8 @@ function writePairingInfo(deviceAddress, resetCode) {
 let mode; // 'SCAN' or 'READ'
 let targetDeviceAddress;
 let verbosity = 0;
-let keepReading = false;
+let repeat = 1;
+let repeatDelay = 500;
 
 function log(level, ...msg) {
   if (level <= verbosity) console.warn(...msg);
@@ -112,8 +118,10 @@ while (args.length) {
     }
     if (mode) usage();
     mode = "READ";
-  } else if (arg === "--keep-reading") {
-    keepReading = true;
+  } else if (arg === "--repeat") {
+    repeat = parseInt(args.shift());
+  } else if (arg === "--repeat-delay") {
+    repeatDelay = parseInt(args.shift());
   } else if (arg === "--scan") {
     if (mode) usage();
     mode = "SCAN";
@@ -127,6 +135,7 @@ while (args.length) {
 if (!mode) {
   usage();
 }
+log(2, "using opts", {targetDeviceAddress, mode, repeat, repeatDelay, verbosity})
 
 noble.on("stateChange", (state) => {
   if (state === "poweredOn") {
@@ -246,10 +255,13 @@ async function connect(peripheral, pairing) {
         })
       );
     }
-    if (keepReading) {
+    if (repeat !== 1) {
+      // read and discard the second chunk
+      const chunk2 = await statsChar.readAsync();
+      log(3, "Received stats chunk2", chunk2)
       log(2, "Waiting...");
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, repeatDelay));
     }
-  } while (keepReading);
+  } while (--repeat);
   process.exit(0);
 }
