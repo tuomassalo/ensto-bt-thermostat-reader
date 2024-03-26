@@ -1,3 +1,5 @@
+NB: See also https://github.com/jumakki/esphome-ensto
+
 # Ensto BT Thermostat Reader
 
 This program attempts to connect to an Ensto ECO16BT (possibly also other models such as ECO10BTW, ELTE6-BT, EPHE5-BT) Bluetooth thermostat and read temperature and other data.
